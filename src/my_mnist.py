@@ -44,18 +44,34 @@ def conv_net(x):
     ### YOUR CODE STARTS HERE ###
 
     # Convolution Layer with F1 filters, a kernel size of K1 and ReLU activations
-    conv1 = tf.layers.conv2d(x, F1, K1, activation=tf.nn.relu)
+    conv1 = tf.layers.conv2d(
+        inputs=x,
+        filters=32,
+        kernel_size=[5, 5],
+        padding="same",
+        activation=tf.nn.relu)
     # Max Pooling (down-sampling) with strides of S1 and kernel size of K2
-    pool1 = tf.layers.max_pooling2d(conv1, S1, K2)
+    pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
 
     # Flatten the data to a 1-D vector for the fully connected layer
-    pool2_flat = tf.contrib.layers.flatten(pool1)
+    conv2 = tf.layers.conv2d(
+        inputs=pool1,
+        filters=64,
+        kernel_size=[5, 5],
+        padding="same",
+        activation=tf.nn.relu)
+    pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
+
+    pool2_flat = tf.reshape(pool2, [-1, 7 * 7 * 64])
+    dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
+    dropout = tf.layers.dropout(
+        inputs=dense, rate=0.4)
 
     # Fully connected layer of width N
-    fc1 = tf.layers.dense(pool2_flat, N)
+    logits = tf.layers.dense(inputs=dropout, units=10)
 
     # Output layer, class prediction
-    out = tf.layers.dense(fc1, n_classes)
+    out = tf.layers.dense(logits, n_classes)
 
     ### YOUR CODE ENDS HERE ###
 
@@ -66,10 +82,11 @@ def my_vanilla_neural_net(x):
     '''
     Creating a feed-forward fully-connected neural network
     '''
+
     # First fully connected layer of size N1
-    fc1 = tf.layers.dense(x, N1)
+    fc1 = tf.layers.dense(x, 784, activation=tf.nn.relu)
     # Second fully connected layer of size N2
-    fc2 = tf.layers.dense(fc1, N2)
+    fc2 = tf.layers.dense(fc1, 784, activation=tf.nn.relu)
     # Output layer, class prediction
     out = tf.layers.dense(fc2, n_classes)
     return out
@@ -164,7 +181,7 @@ if __name__ == "__main__":
     # Parameters
     learning_rate = 0.001
     batch_size = 100
-    n_epochs = 10
+    n_epochs = 100
     display_step = 1
 
     # tf Graph input
@@ -174,8 +191,8 @@ if __name__ == "__main__":
     """
     # Choose which network you're training by commenting out the one you're not:
     """
-    chosen_network_architecture = my_vanilla_neural_net  # You may comment out as desired. DO NOT modify the name of this method.
-    # chosen_network_architecture = conv_net  # You may comment out as desired. DO NOT modify the name of this method.
+    # chosen_network_architecture = my_vanilla_neural_net  # You may comment out as desired. DO NOT modify the name of this method.
+    chosen_network_architecture = conv_net  # You may comment out as desired. DO NOT modify the name of this method.
 
     ### DO NOT MODIFY CODE BETWEEN THESE LINES - START ###
     pred = chosen_network_architecture(x)
