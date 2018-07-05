@@ -3,7 +3,8 @@ from __future__ import print_function
 # from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 import os
-model_path = "../out/"
+# model_path = "../out/"
+model_path = "/Users/yogev/Google Drive/IDC/Year 2/Semester 2/Machine Learning from Data/HW/7/deep_learning/out/"
 print("Loading data...")
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("../res/MNIST_data/", one_hot=True)
@@ -64,11 +65,8 @@ def conv_net(x):
 
     pool2_flat = tf.reshape(pool2, [-1, 7 * 7 * 64])
     dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
-    dropout = tf.layers.dropout(
-        inputs=dense, rate=0.4)
-
     # Fully connected layer of width N
-    logits = tf.layers.dense(inputs=dropout, units=10)
+    logits = tf.layers.dense(inputs=dense, units=10)
 
     # Output layer, class prediction
     out = tf.layers.dense(logits, n_classes)
@@ -84,9 +82,9 @@ def my_vanilla_neural_net(x):
     '''
 
     # First fully connected layer of size N1
-    fc1 = tf.layers.dense(x, 784, activation=tf.nn.relu)
+    fc1 = tf.layers.dense(x, 400, activation=tf.nn.relu)
     # Second fully connected layer of size N2
-    fc2 = tf.layers.dense(fc1, 784, activation=tf.nn.relu)
+    fc2 = tf.layers.dense(fc1, 100, activation=tf.nn.relu)
     # Output layer, class prediction
     out = tf.layers.dense(fc2, n_classes)
     return out
@@ -181,7 +179,7 @@ if __name__ == "__main__":
     # Parameters
     learning_rate = 0.001
     batch_size = 100
-    n_epochs = 100
+    n_epochs = 10
     display_step = 1
 
     # tf Graph input
@@ -212,5 +210,5 @@ if __name__ == "__main__":
     """
     # Turn save_final_model to True when you're ready to save your final model (i.e. saving its trained state). (!) Make sure you can restore and test.
     """
-    train_test_model(save_final_model=False)
-    # restore_test_model() # use this only at the end to verify your model has been properly saved - failure to submit a saved model will receive a grade of 0.
+    # train_test_model(save_final_model=True)
+    restore_test_model() # use this only at the end to verify your model has been properly saved - failure to submit a saved model will receive a grade of 0.
