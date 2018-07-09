@@ -3,8 +3,7 @@ from __future__ import print_function
 # from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 import os
-# model_path = "../out/"
-model_path = "/Users/yogev/Google Drive/IDC/Year 2/Semester 2/Machine Learning from Data/HW/7/deep_learning/out/"
+model_path = "../out/"
 print("Loading data...")
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("../res/MNIST_data/", one_hot=True)
@@ -43,33 +42,18 @@ def conv_net(x):
     x = tf.reshape(x, shape=[-1, 28, 28, 1])
 
     ### YOUR CODE STARTS HERE ###
-
     # Convolution Layer with F1 filters, a kernel size of K1 and ReLU activations
-    conv1 = tf.layers.conv2d(
-        inputs=x,
-        filters=32,
-        kernel_size=[5, 5],
-        padding="same",
-        activation=tf.nn.relu)
+    conv1 = tf.layers.conv2d(x, 10, 5, activation=tf.nn.relu)
     # Max Pooling (down-sampling) with strides of S1 and kernel size of K2
-    pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
+    pool1 = tf.layers.max_pooling2d(conv1, 2, 2)
 
     # Flatten the data to a 1-D vector for the fully connected layer
-    conv2 = tf.layers.conv2d(
-        inputs=pool1,
-        filters=64,
-        kernel_size=[5, 5],
-        padding="same",
-        activation=tf.nn.relu)
-    pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
+    pool2_flat = tf.contrib.layers.flatten(pool1)
 
-    pool2_flat = tf.reshape(pool2, [-1, 7 * 7 * 64])
-    dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
     # Fully connected layer of width N
-    logits = tf.layers.dense(inputs=dense, units=10)
+    fc1 = tf.layers.dense(pool2_flat, 100)
 
-    # Output layer, class prediction
-    out = tf.layers.dense(logits, n_classes)
+    out = tf.layers.dense(fc1, n_classes)
 
     ### YOUR CODE ENDS HERE ###
 
@@ -82,9 +66,9 @@ def my_vanilla_neural_net(x):
     '''
 
     # First fully connected layer of size N1
-    fc1 = tf.layers.dense(x, 400, activation=tf.nn.relu)
+    fc1 = tf.layers.dense(x, 100, activation=tf.nn.relu)
     # Second fully connected layer of size N2
-    fc2 = tf.layers.dense(fc1, 100, activation=tf.nn.relu)
+    fc2 = tf.layers.dense(fc1, 20, activation=tf.nn.relu)
     # Output layer, class prediction
     out = tf.layers.dense(fc2, n_classes)
     return out
@@ -210,5 +194,5 @@ if __name__ == "__main__":
     """
     # Turn save_final_model to True when you're ready to save your final model (i.e. saving its trained state). (!) Make sure you can restore and test.
     """
-    # train_test_model(save_final_model=True)
+    # train_test_model(save_final_model=False)
     restore_test_model() # use this only at the end to verify your model has been properly saved - failure to submit a saved model will receive a grade of 0.
